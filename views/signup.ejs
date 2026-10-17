@@ -2,39 +2,108 @@
 <html lang="en">
   <head>
     <%- include('./partials/head') %>
-    <title>Signup</title>
+    <title>Create Account — Blogify</title>
   </head>
   <body>
     <%- include('./partials/nav') %>
 
-    <div class="container mt-3">
-      <form action="/user/signup" method="post">
-        <div class="mb-3">
-          <label for="fullName" class="form-label">Full Name</label>
-          <input
-            type="text"
-            class="form-control"
-            name="fullName"
-            id="fullName"
-          />
+    <div class="auth-wrapper">
+      <div class="auth-card">
+        <!-- Auth Header -->
+        <div class="auth-header">
+          <div class="auth-badge">
+            <i class="bi bi-person-plus"></i>
+          </div>
+          <h1 class="auth-title">Join Blogify</h1>
+          <p class="auth-subtitle">
+            Create an account to publish essays, leave comments, and connect with a community of readers.
+          </p>
         </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">Email address</label>
-          <input type="email" class="form-control" name="email" id="email" />
+
+        <!-- Signup Form -->
+        <form action="/user/signup" method="post">
+          <!-- Full Name Input -->
+          <div class="mb-3">
+            <label for="fullName" class="form-label-editorial">
+              <i class="bi bi-person"></i> Full Name
+            </label>
+            <input
+              type="text"
+              class="form-control form-control-editorial"
+              name="fullName"
+              id="fullName"
+              placeholder="e.g. Eleanor Vance"
+              required
+              autocomplete="name"
+            />
+          </div>
+
+          <!-- Email Input -->
+          <div class="mb-3">
+            <label for="email" class="form-label-editorial">
+              <i class="bi bi-envelope"></i> Email Address
+            </label>
+            <input
+              type="email"
+              class="form-control form-control-editorial"
+              name="email"
+              id="email"
+              placeholder="name@example.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+
+          <!-- Password Input with Show/Hide -->
+          <div class="mb-4">
+            <label for="signupPassword" class="form-label-editorial">
+              <i class="bi bi-lock"></i> Password
+            </label>
+            <div class="input-password-group">
+              <input
+                type="password"
+                class="form-control form-control-editorial pe-5"
+                name="password"
+                id="signupPassword"
+                placeholder="Create a secure password"
+                required
+                autocomplete="new-password"
+              />
+              <button
+                type="button"
+                class="btn-toggle-password"
+                data-target="signupPassword"
+                aria-label="Toggle password visibility"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+            <div class="form-text text-muted" style="font-size: 0.78rem;">
+              Must be at least 6 characters with a combination of letters and numbers.
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn-editorial-primary btn-editorial-lg w-100">
+              <i class="bi bi-check2-circle"></i> Create Account
+            </button>
+          </div>
+        </form>
+
+        <!-- Switch to Login -->
+        <div class="text-center pt-3 border-top">
+          <p class="text-muted small mb-0">
+            Already have an account?
+            <a href="/user/login" class="text-decoration-none fw-semibold" style="color: var(--accent-primary);">
+              Sign in here
+            </a>
+          </p>
         </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            name="password"
-            id="password"
-          />
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+      </div>
     </div>
 
+    <%- include('./partials/footer') %>
     <%- include('./partials/scripts') %>
   </body>
 </html>

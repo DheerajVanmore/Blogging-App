@@ -2,49 +2,212 @@
 <html lang="en">
   <head>
     <%- include('./partials/head') %>
-    <title>Blog</title>
+    <title><%= blog.title %> — Blogify</title>
   </head>
   <body>
     <%- include('./partials/nav') %>
 
-    <div class="container mt-4">
-      <h1><%= blog.title %></h1>
-      <img src="<%= blog.coverImageURL %>" width="600px" />
-      <pre class="mt-3"><%= blog.body %></pre>
-    </div>
-
-    <div class="container mt-4">
-      <img src="<%= blog.createdBy.avatar %>" width="50px" /> <%=
-      blog.createdBy.fullName %>
-    </div>
-
-    <div class="container mt-3">
-      <h1>Comments (<%= comments.length %>)</h1>
-      <% if (locals.user) { %>
-      <form action="/blog/comment/<%= blog._id %>" method="post">
-        <div class="mb-3">
-          <input
-            type="text"
-            class="form-control"
-            name="content"
-            placeholder="Enter your comment"
-          />
-          <button type="submit" class="btn btn-sm btn-primary">Add</button>
-        </div>
-      </form>
-      <% } %>
-      <div class="mt-3">
-        <% comments.forEach(comment => { %>
-        <div>
-          <img src="<%= comment.createdBy.avatar %>" width="50px" />
-          <%= comment.createdBy.fullName %>:
-          <pre> <%= comment.content %></pre>
-        </div>
-
-        <% }) %>
+    <article class="article-container">
+      <!-- Back Navigation -->
+      <div class="mb-4">
+        <a href="/" class="btn-editorial-outline btn-editorial-sm text-decoration-none">
+          <i class="bi bi-arrow-left"></i> Back to all stories
+        </a>
       </div>
-    </div>
 
+      <!-- Article Header -->
+      <header class="article-header">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <span class="article-tag">
+            <i class="bi bi-feather"></i> Published Essay
+          </span>
+          <span class="text-muted">•</span>
+          <span class="text-muted small" id="articleReadingTime">3 min read</span>
+        </div>
+
+        <h1 class="article-title"><%= blog.title %></h1>
+
+        <!-- Author Information Bar -->
+        <div class="article-author-card">
+          <div class="author-left">
+            <img
+              src="<%= (blog.createdBy && blog.createdBy.avatar) ? blog.createdBy.avatar : '/images/avatar.png' %>"
+              alt="<%= (blog.createdBy && blog.createdBy.fullName) ? blog.createdBy.fullName : 'Author' %>"
+              class="author-avatar-lg"
+              onerror="this.src='/images/avatar.png'"
+            />
+            <div>
+              <div class="author-name-lg">
+                <%= (blog.createdBy && blog.createdBy.fullName) ? blog.createdBy.fullName : 'Independent Writer' %>
+                <% if (blog.createdBy && blog.createdBy.role === 'ADMIN') { %>
+                  <span class="comment-badge-admin ms-1">Editor</span>
+                <% } %>
+              </div>
+              <div class="author-meta-sub">
+                <span>
+                  <i class="bi bi-calendar3 me-1"></i>
+                  <%= new Date(blog.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
+                </span>
+                <% if (blog.createdBy && blog.createdBy.email) { %>
+                  <span>•</span>
+                  <span><%= blog.createdBy.email %></span>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Share buttons -->
+          <div class="d-none d-sm-flex align-items-center gap-2">
+            <button
+              class="btn-editorial-outline btn-editorial-sm"
+              onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!');"
+              title="Copy Link"
+            >
+              <i class="bi bi-link-45deg"></i> Share
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Cover Image -->
+      <% if (blog.coverImageURL) { %>
+        <figure class="article-cover-wrapper">
+          <img
+            src="<%= blog.coverImageURL %>"
+            alt="<%= blog.title %>"
+            class="article-cover-img"
+            onerror="this.style.display='none'"
+          />
+        </figure>
+      <% } %>
+
+      <!-- Article Reading Body -->
+      <div class="article-body">
+        <% 
+          // Format body content preserving line breaks safely
+          const paragraphs = (blog.body || '').split(/\n\s*\n/);
+          paragraphs.forEach(para => { 
+            if (para.trim()) {
+        %>
+          <p><%= para.trim() %></p>
+        <% 
+            }
+          }); 
+        %>
+      </div>
+
+      <!-- Article Footer Meta & Engagement -->
+      <div class="article-footer-share">
+        <div class="d-flex align-items-center gap-2 text-muted small">
+          <i class="bi bi-clock-history"></i>
+          <span>Last revised <%= new Date(blog.updatedAt || blog.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+        </div>
+        <div class="d-flex gap-2">
+          <button
+            class="btn-editorial-outline btn-editorial-sm"
+            onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!');"
+          >
+            <i class="bi bi-share"></i> Share Article
+          </button>
+        </div>
+      </div>
+
+      <!-- Comments Section -->
+      <section class="comments-wrapper" id="commentsSection">
+        <div class="comments-header">
+          <div class="d-flex align-items-center gap-2">
+            <h3 class="mb-0">Discussion</h3>
+            <span class="comments-count-pill"><%= comments.length %></span>
+          </div>
+          <span class="text-muted small">Thoughtful conversations welcome</span>
+        </div>
+
+        <!-- Add Comment Form -->
+        <% if (locals.user) { %>
+          <div class="comment-input-card">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <img
+                src="<%= locals.user.avatar || locals.user.profileImageURL || '/images/avatar.png' %>"
+                alt="Your Avatar"
+                class="user-avatar-mini"
+                onerror="this.src='/images/avatar.png'"
+              />
+              <span class="fw-semibold small text-dark">
+                Comment as <%= locals.user.fullName || (locals.user.email ? locals.user.email.split('@')[0] : 'Member') %>
+              </span>
+            </div>
+
+            <form action="/blog/comment/<%= blog._id %>" method="post">
+              <div class="mb-3">
+                <textarea
+                  class="comment-textarea auto-resize-textarea"
+                  name="content"
+                  rows="3"
+                  placeholder="What are your thoughts on this story? Be respectful and constructive..."
+                  required
+                ></textarea>
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="submit" class="btn-editorial-primary btn-editorial-sm">
+                  <i class="bi bi-send-fill"></i> Post Comment
+                </button>
+              </div>
+            </form>
+          </div>
+        <% } else { %>
+          <!-- Sign in prompt to comment -->
+          <div class="card p-4 text-center border-0 bg-light rounded-4 mb-4">
+            <div class="mb-2">
+              <i class="bi bi-chat-heart fs-3 text-secondary"></i>
+            </div>
+            <h5 class="mb-1">Join the conversation</h5>
+            <p class="text-muted small mb-3">Sign in or create an account to share your thoughts on this article.</p>
+            <div class="d-flex justify-content-center gap-2">
+              <a href="/user/login" class="btn-editorial-outline btn-editorial-sm">Sign In</a>
+              <a href="/user/signup" class="btn-editorial-primary btn-editorial-sm">Create Account</a>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Existing Comments List -->
+        <div class="comments-list">
+          <% if (comments && comments.length > 0) { %>
+            <% comments.forEach(comment => { %>
+              <div class="comment-card">
+                <div class="comment-author-row">
+                  <img
+                    src="<%= (comment.createdBy && comment.createdBy.avatar) ? comment.createdBy.avatar : '/images/avatar.png' %>"
+                    alt="<%= (comment.createdBy && comment.createdBy.fullName) ? comment.createdBy.fullName : 'User' %>"
+                    class="comment-avatar"
+                    onerror="this.src='/images/avatar.png'"
+                  />
+                  <div>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="comment-author-name">
+                        <%= (comment.createdBy && comment.createdBy.fullName) ? comment.createdBy.fullName : 'Reader' %>
+                      </span>
+                      <% if (comment.createdBy && comment.createdBy.role === 'ADMIN') { %>
+                        <span class="comment-badge-admin">Admin</span>
+                      <% } %>
+                    </div>
+                    <span class="text-muted" style="font-size: 0.78rem;">
+                      <%= new Date(comment.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                    </span>
+                  </div>
+                </div>
+                <div class="comment-content"><%= comment.content %></div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="text-center py-4 text-muted">
+              <p class="mb-0">No comments yet. Be the first to share your perspective!</p>
+            </div>
+          <% } %>
+        </div>
+      </section>
+    </article>
+
+    <%- include('./partials/footer') %>
     <%- include('./partials/scripts') %>
   </body>
 </html>

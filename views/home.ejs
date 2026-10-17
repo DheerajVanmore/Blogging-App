@@ -2,27 +2,174 @@
 <html lang="en">
   <head>
     <%- include('./partials/head') %>
-    <title>Homepage</title>
+    <title>Blogify — Ideas, Stories & Perspectives</title>
   </head>
   <body>
     <%- include('./partials/nav') %>
 
-    <div class="container mt-3">
-      <div class="row row-cols-4">
-        <% blogs.forEach(blog => { %>
-        <div class="col">
-          <div class="card col" style="width: 18rem">
-            <img src="<%= blog.coverImageURL %>" class="card-img-top" />
-            <div class="card-body">
-              <h5 class="card-title"><%= blog.title %></h5>
-              <a href="/blog/<%= blog._id %>" class="btn btn-primary">View</a>
+    <!-- Editorial Hero Header -->
+    <header class="hero-editorial">
+      <div class="container text-center">
+        <div class="hero-pill">
+          <i class="bi bi-stars"></i> Curated Independent Publication
+        </div>
+        <h1 class="hero-title">
+          Where thoughtful ideas <br class="d-none d-sm-inline" />find their voice.
+        </h1>
+        <p class="hero-subtitle mx-auto">
+          Explore essays, deep dives, and creative narratives penned by an open community of writers, engineers, and creators.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3">
+          <% if (locals.user) { %>
+            <a href="/blog/add-new" class="btn-editorial-primary btn-editorial-lg">
+              <i class="bi bi-pencil-square"></i> Write an Article
+            </a>
+            <a href="#storiesFeed" class="btn-editorial-outline btn-editorial-lg">
+              Explore Stories
+            </a>
+          <% } else { %>
+            <a href="/user/signup" class="btn-editorial-dark btn-editorial-lg">
+              Start Writing Today
+            </a>
+            <a href="#storiesFeed" class="btn-editorial-outline btn-editorial-lg">
+              Browse Articles
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Feed -->
+    <main class="container my-5" id="storiesFeed">
+      <% if (blogs && blogs.length > 0) { %>
+
+        <!-- Featured Story (First Blog) -->
+        <div class="featured-story-card">
+          <div class="row g-0 align-items-center">
+            <div class="col-lg-7">
+              <div class="featured-story-img-wrapper">
+                <img
+                  src="<%= blogs[0].coverImageURL || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80' %>"
+                  alt="<%= blogs[0].title %>"
+                  class="featured-story-img"
+                  onerror="this.src='https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80'"
+                />
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="featured-story-content">
+                <div class="featured-badge">
+                  <i class="bi bi-lightning-charge-fill"></i> Featured Read
+                </div>
+                <h2 class="featured-title">
+                  <a href="/blog/<%= blogs[0]._id %>" class="text-decoration-none text-dark">
+                    <%= blogs[0].title %>
+                  </a>
+                </h2>
+                <p class="featured-excerpt">
+                  <%= blogs[0].body ? blogs[0].body.substring(0, 160) + (blogs[0].body.length > 160 ? '...' : '') : '' %>
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                  <span class="text-muted small">
+                    <i class="bi bi-book me-1"></i> Editorial Pick
+                  </span>
+                  <a href="/blog/<%= blogs[0]._id %>" class="btn-editorial-primary btn-editorial-sm">
+                    Read Article <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <% }) %>
-      </div>
-    </div>
 
+        <!-- Section Title for remaining stories -->
+        <% if (blogs.length > 1) { %>
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+              <h3 class="mb-1">Recent Articles</h3>
+              <p class="text-muted mb-0 small">Fresh perspectives recently published by writers</p>
+            </div>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+              <%= blogs.length - 1 %> <%= blogs.length - 1 === 1 ? 'more story' : 'more stories' %>
+            </span>
+          </div>
+
+          <!-- Stories Grid -->
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+            <% blogs.slice(1).forEach(blog => { %>
+              <div class="col">
+                <article class="editorial-card">
+                  <div class="editorial-card-img-wrapper">
+                    <img
+                      src="<%= blog.coverImageURL || 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=800&q=80' %>"
+                      class="editorial-card-img"
+                      alt="<%= blog.title %>"
+                      onerror="this.src='https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=800&q=80'"
+                    />
+                    <span class="editorial-card-badge">Article</span>
+                  </div>
+
+                  <div class="editorial-card-body">
+                    <div class="editorial-card-meta">
+                      <span class="text-truncate">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        <%= new Date(blog.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                      </span>
+                    </div>
+
+                    <h4 class="editorial-card-title">
+                      <a href="/blog/<%= blog._id %>" class="text-decoration-none text-dark">
+                        <%= blog.title %>
+                      </a>
+                    </h4>
+
+                    <p class="editorial-card-excerpt">
+                      <%= blog.body ? blog.body.substring(0, 130) + (blog.body.length > 130 ? '...' : '') : '' %>
+                    </p>
+
+                    <div class="editorial-card-footer">
+                      <a href="/blog/<%= blog._id %>" class="card-read-link">
+                        <span>Read Story</span>
+                        <i class="bi bi-arrow-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+
+      <% } else { %>
+        <!-- Empty State When No Blogs Exist -->
+        <div class="empty-state-editorial">
+          <div class="empty-state-icon">
+            <i class="bi bi-journal-richtext"></i>
+          </div>
+          <h3 class="mb-2">No Stories Published Yet</h3>
+          <p class="text-muted mb-4">
+            The stage is set for you. Start a conversation, tell an inspiring story, or publish your thoughts for the world.
+          </p>
+          <% if (locals.user) { %>
+            <a href="/blog/add-new" class="btn-editorial-primary">
+              <i class="bi bi-pencil-square"></i> Write the First Article
+            </a>
+          <% } else { %>
+            <div class="d-flex justify-content-center gap-2">
+              <a href="/user/signup" class="btn-editorial-primary">
+                Create Account to Write
+              </a>
+              <a href="/user/login" class="btn-editorial-outline">
+                Sign In
+              </a>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+    </main>
+
+    <%- include('./partials/footer') %>
     <%- include('./partials/scripts') %>
   </body>
 </html>

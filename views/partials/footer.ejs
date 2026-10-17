@@ -1,0 +1,51 @@
+<footer class="editorial-footer">
+  <div class="container">
+    <div class="row g-4 justify-content-between">
+      <div class="col-lg-5 col-md-6">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div class="brand-icon-box">
+            <i class="bi bi-feather"></i>
+          </div>
+          <span class="footer-brand-title">Blogify</span>
+        </div>
+        <p class="footer-desc">
+          A dedicated sanctuary for independent writers, curious thinkers, and thoughtful readers. Discover compelling perspectives across technology, art, design, and culture.
+        </p>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6 class="footer-heading">Platform</h6>
+        <ul class="footer-links">
+          <li><a href="/"><i class="bi bi-house me-1"></i> Feed</a></li>
+          <% if (locals.user) { %>
+            <li><a href="/blog/add-new"><i class="bi bi-pencil-square me-1"></i> Write a Story</a></li>
+            <li><a href="/user/logout"><i class="bi bi-box-arrow-right me-1"></i> Sign Out</a></li>
+          <% } else { %>
+            <li><a href="/user/login"><i class="bi bi-box-arrow-in-right me-1"></i> Sign In</a></li>
+            <li><a href="/user/signup"><i class="bi bi-person-plus me-1"></i> Get Started</a></li>
+          <% } %>
+        </ul>
+      </div>
+
+      <div class="col-lg-3 col-md-3 col-6">
+        <h6 class="footer-heading">About</h6>
+        <ul class="footer-links">
+          <li><a href="#"><i class="bi bi-info-circle me-1"></i> Editorial Vision</a></li>
+          <li><a href="#"><i class="bi bi-shield-check me-1"></i> Community Rules</a></li>
+          <li><a href="#"><i class="bi bi-envelope me-1"></i> Contact Editors</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>
+        &copy; <%= new Date().getFullYear() %> Blogify Publishing Platform. Crafted for thoughtful reading.
+      </div>
+      <div class="d-flex gap-3">
+        <a href="#" class="text-secondary"><i class="bi bi-twitter-x"></i></a>
+        <a href="#" class="text-secondary"><i class="bi bi-github"></i></a>
+        <a href="#" class="text-secondary"><i class="bi bi-linkedin"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
